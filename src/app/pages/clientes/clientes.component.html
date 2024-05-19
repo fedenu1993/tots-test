@@ -1,0 +1,10 @@
+<div class="container" style="margin-top: 10px;">
+    <div class="d-flex justify-content-between">
+        <h2>Clientes</h2>
+        <button mat-flat-button color="primary" (click)="addItem()">
+            <mat-icon aria-hidden="false" fontIcon="add"></mat-icon>
+            Nuevo
+        </button>
+    </div>
+    <tots-table #tableComp [config]="config" (onAction)="onTableAction($event)" [pageSize]="5" [pageIndex]="1"></tots-table>
+</div>
