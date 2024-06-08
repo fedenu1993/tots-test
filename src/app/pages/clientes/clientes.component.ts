@@ -1,7 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { FormGroup, Validators } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
-import { TotsListResponse } from '@tots/core';
+import { TotsListResponse, TotsQuery } from '@tots/core';
 import { MoreMenuColumnComponent, StringColumnComponent, TotsActionTable, TotsColumn, TotsTableComponent, TotsTableConfig } from '@tots/table';
 import { StringFieldComponent, TotsFormModalService, TotsModalConfig, TotsActionModalForm, SubmitAndCancelButtonsFieldComponent } from '@tots/form';
 import { delay, lastValueFrom, of, tap } from 'rxjs';
@@ -35,7 +35,7 @@ export class ClientesComponent {
   }
 
   async loadClients() {
-    const response = await this.clientService.get();
+    const response = await lastValueFrom(this.clientService.list());
     this.items = response.data;
     let data = new TotsListResponse();
     data = response;
@@ -99,7 +99,7 @@ export class ClientesComponent {
     // Y asi evitar diferencias entre versiones
     if (clientData.id) {
       try {
-        const res: any = await lastValueFrom(this.clientService.getById(clientData.id));
+        const res: any = await lastValueFrom(this.clientService.fetchById(clientData.id));
         clientData = res.response;
       } catch (error) {
         console.error('Error al obtener cliente', error);
@@ -131,7 +131,8 @@ export class ClientesComponent {
       }))
       .subscribe(action => {
         if (action.key == 'submit') {
-          this.clientService.deleteById(this.item).subscribe(async (res: any) => {
+          this.clientService.removeById(this.item.id).subscribe(async (res: any) => {
+            console.log('eliminando', res)
             await this.onClickOpenModalAfter(action, res);
           })
         } else if (action.key == 'cancel') {
@@ -179,12 +180,13 @@ export class ClientesComponent {
       .subscribe(action => {
         if (action.key == 'submit') {
           if (this.item.id) {
-            this.clientService.update(this.item).subscribe(async (res: any) => {
+            this.clientService.update(action.item).subscribe(async (res: any) => {
               await this.onClickOpenModalAfter(action, res);
             })
           } else {
-
-            this.clientService.create(this.item).subscribe(async (res: any) => {
+            console.log('aca', this.item, action)
+            this.clientService.create(action.item).subscribe(async (res: any) => {
+              console.log(res)
               await this.onClickOpenModalAfter(action, res);
             })
           }
