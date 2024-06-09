@@ -84,7 +84,7 @@ export class ClientesComponent {
     let data = await this.loadClients();
     data.data = this.items;
     data.per_page = 5;
-    this.config.obs = of(data).pipe(delay(1000));
+    this.config.obs = of(data);
     this.tableComp.loadItems();
   }
 
